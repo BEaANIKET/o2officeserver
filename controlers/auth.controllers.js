@@ -6,6 +6,8 @@ import { Post } from "../models/post.models.js";
 export const register = async (req, res) => {
     try {
         const { fullName, email, password } = req.body;
+        console.log(fullName, email, password);
+
         const user = await User.findOne({ email });
 
         if (user) {
@@ -27,6 +29,8 @@ export const register = async (req, res) => {
 
         return res.status(201).json({ message: 'User registered successfully' });
     } catch (error) {
+        console.log(error);
+
         return res.status(500).json({
             message: 'Server error',
             error: error.message

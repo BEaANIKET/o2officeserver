@@ -90,6 +90,10 @@ export const deletePost = async (req, res) => {
 
 export const getPosts = async (req, res) => {
     try {
+        const page = parseInt(req.query.page, 10) || 1;
+        const limit = parseInt(req.query.limit, 10) || 3;
+        const skip = (page - 1) * limit;
+
         const posts = await Post.aggregate([
             {
                 $lookup: {
@@ -108,20 +112,28 @@ export const getPosts = async (req, res) => {
                     "user.email": 0,
                     "user.createdAt": 0,
                     "user.updatedAt": 0,
-                    _id: 1,
+                    "user.backgroundCover": 0,
                 },
             },
             {
                 $sort: { createdAt: -1 },
             },
+            {
+                $skip: skip,
+            },
+            {
+                $limit: limit,
+            },
         ]);
+
+        const totalPosts = await Post.countDocuments();
 
         return res.status(200).json({
             message: "Posts fetched successfully",
             posts,
         });
     } catch (error) {
-        console.error(error);
+        console.error("Error fetching posts:", error);
         return res.status(500).json({
             error: error.message,
             message: "Internal server error",
@@ -130,8 +142,12 @@ export const getPosts = async (req, res) => {
 };
 
 
+
 export const uploadFile = async (req, res) => {
     try {
+
+        console.log(req.body);
+
         if (!req.file) {
             return res.status(400).json({ message: "Please upload a file" });
         }

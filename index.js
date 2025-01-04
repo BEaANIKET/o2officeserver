@@ -21,6 +21,7 @@ app.get("/", (req, res) => {
   res.send("hello, world!");
 });
 
+
 import authRouter from "./router/auth.router.js";
 import { messageRouter } from "./router/message.router.js";
 import { userRoute } from "./router/user.router.js";
